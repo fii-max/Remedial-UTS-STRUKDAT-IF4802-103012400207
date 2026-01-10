@@ -1,0 +1,89 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+struct doc_info {
+    string namaDok;
+    string namaPengguna;
+    int hal;
+};
+
+typedef doc_info infotypeQ;
+struct elmQ;
+typedef elmQ* addressQ;
+
+struct elmQ {
+    infotypeQ info;
+    addressQ next;
+};
+
+struct queue {
+    addressQ head;
+    addressQ tail;
+};
+
+// Jawaban Soal A: Enqueue
+void enqueue(queue &Q, addressQ p) {
+    p->next = nullptr;
+    if (Q.head == nullptr) {
+        Q.head = p;
+    } else {
+        Q.tail->next = p;
+    }
+    Q.tail = p;
+}
+
+// Jawaban Soal B: Dequeue
+void dequeue(queue &Q, addressQ &p) {
+    if (Q.head != nullptr) {
+        p = Q.head;
+        Q.head = Q.head->next;
+        if (Q.head == nullptr) {
+            Q.tail = nullptr;
+        }
+        p->next = nullptr;
+    } else {
+        p = nullptr;
+    }
+}
+
+// Fungsi bantu untuk membuat elemen baru
+addressQ createNewElm(infotypeQ x) {
+    addressQ p = new elmQ;
+    p->info = x;
+    p->next = nullptr;
+    return p;
+}
+
+// Jawaban Soal C: Antri Printer dengan Limit 3
+void antriPrinter(queue &Q, infotypeQ doc) {
+    int count = 0;
+    addressQ P = Q.head;
+    while (P != nullptr) {
+        if (P->info.namaPengguna == doc.namaPengguna) count++;
+        P = P->next;
+    }
+
+    if (count < 3) {
+        P = createNewElm(doc);
+        enqueue(Q, P);
+    } else {
+        cout << "Gagal: Pengguna " << doc.namaPengguna << " sudah memiliki 3 dokumen." << endl;
+    }
+}
+
+// Jawaban Soal D: Simulasi Cetak berdasarkan Kertas
+void simulasiCetak(queue &Q, int &kertas) {
+    addressQ p;
+    while (Q.head != nullptr && kertas >= Q.head->info.hal) {
+        kertas -= Q.head->info.hal;
+        cout << "Mencetak: " << Q.head->info.namaDok << endl;
+        dequeue(Q, p);
+        delete p;
+    }
+
+    if (Q.head != nullptr && kertas < Q.head->info.hal) {
+        cout << "Kertas tidak mencukupi untuk dokumen berikutnya." << endl;
+    }
+}
