@@ -1,0 +1,65 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+typedef string infotype;
+struct elmList;
+typedef elmList* address;
+
+struct elmList {
+    infotype url;
+    address next;
+    address prev;
+};
+
+struct list {
+    address first;
+    address last;
+};
+
+// Fungsi yang tersedia sesuai soal
+address cariRiwayat(list L, infotype cari) {
+    address P = L.first;
+    while (P != nullptr) {
+        if (P->url == cari) return P;
+        P = P->next;
+    }
+    return nullptr;
+}
+
+// Jawaban Soal A: Menghapus riwayat tertentu
+void hapusRiwayat(list &L, infotype cari) {
+    address P = cariRiwayat(L, cari);
+    if (P != nullptr) {
+        if (P == L.first && P == L.last) { 
+            L.first = nullptr;
+            L.last = nullptr;
+        } else if (P == L.first) {         
+            L.first = P->next;
+            L.first->prev = nullptr;
+        } else if (P == L.last) {          
+            L.last = P->prev;
+            L.last->next = nullptr;
+        } else {                           
+            P->prev->next = P->next;
+            P->next->prev = P->prev;
+        }
+        delete P; 
+    }
+}
+
+// Jawaban Soal B: Simulasi Backward
+void Backward(list L, infotype target) {
+    address P_target = cariRiwayat(L, target);
+    if (L.first == nullptr || P_target == nullptr) {
+        cout << "Proses backward gagal." << endl;
+    } else {
+        address P = L.last;
+        while (P != P_target->prev) {
+            cout << P->url << " -> ";
+            P = P->prev;
+        }
+        cout << endl;
+    }
+}
